@@ -33,6 +33,7 @@
 
 (()=>{
 const STAT_KEYS = ['hp','atk','def','crit','ult'];
+const INITIAL_AP = 6;
 const STAT_META = {
  hp:{name:'生命',label:'HP',icon:'♡',gain:[8,15],loss:[3,7]},
  atk:{name:'攻擊',label:'ATK',icon:'⚔',gain:[2,5],loss:[1,3]},
@@ -200,7 +201,7 @@ function render(){({home:renderHome,select:renderSelect,prep:renderPrep,battle:r
 function go(screen){state.screen=screen;render();window.scrollTo({top:0,left:0,behavior:'instant'});}
 function cancelRun(){clearTimeout(state.timer);state.run++;state.busy=false;}
 function startRun(id){
- cancelRun();state.selected=id;state.player=makeCharacter(CLASSES.find(c=>c.id===id));state.boss=null;state.stage=0;state.ap=10;state.stats=makeStats();state.bossStats=makeStats();state.logs=[];state.result=null;state.turn=0;state.speed=1;state.startedAt=Date.now();state.victory=false;go('prep');announce('職業確認。獲得十點能力點。');
+ cancelRun();state.selected=id;state.player=makeCharacter(CLASSES.find(c=>c.id===id));state.boss=null;state.stage=0;state.ap=INITIAL_AP;state.stats=makeStats();state.bossStats=makeStats();state.logs=[];state.result=null;state.turn=0;state.speed=1;state.startedAt=Date.now();state.victory=false;go('prep');announce(`職業確認。獲得 ${INITIAL_AP} 點能力點。`);
 }
 function performEnhancement(stat){
  if(state.screen!=='prep'||state.busy||state.ap<=0||!STAT_KEYS.includes(stat)||state.player.levels[stat]>=6)return;
@@ -251,7 +252,7 @@ function showModal(title,en,body){
 }
 function closeModal(){modal.close();}
 function showHelp(){
- showModal('遊玩指南','HOW TO PLAY',`<h3>一張職業卡，五場命運試煉。</h3><ol><li>選擇<strong>戰士、法師、刺客或聖騎士</strong>，獲得 10 AP。</li><li>自行將 AP 用於 HP、ATK、DEF、CRIT 或 ULT；每次消耗 1 AP。</li><li>先判定<strong>成功或失敗</strong>，再隨機抽取增加值或損失值；失敗真的會扣能力。</li><li>成功提升該能力等級。等級越高，下次成功率越低；最高 Lv.6。失敗不降級。</li><li>準備好後挑戰 Boss。<strong>沒用完的 AP 會捨棄</strong>，不會累積。</li><li>戰鬥自動輪流進行，玩家先攻。先判定大招，未觸發才判定爆擊，再不觸發就是普攻。</li><li>普攻必定命中，固定傷害 <strong>max(1, ATK − DEF)</strong>。爆擊為普攻的 1.5 倍後四捨五入。</li><li>擊敗 Boss 後獲得 8、9、10、12 AP；進入下次強化時<strong>生命回滿</strong>，能力與等級保留。</li><li>連續擊敗五名 Boss 即勝利。任何一戰倒下，就要從第一關重新開始。</li><li>可切換 ×2 戰鬥速度。開啟說明視窗或切換分頁會暫停後續戰鬥回合。</li></ol><h3>冒險，也要有底線。</h3><p>HP 最低為職業初始生命的 50%；ATK ≥5、DEF ≥0、CRIT 介於 5%–60%、ULT 介於 10%–60%。每項最高 Lv.6。生命與能力保留一位小數；百分點成長也取一位小數，畫面與判定使用同一數值。</p><p>大招固定傷害：戰士 2.2×ATK − DEF；法師 2.6×ATK − 0.5×DEF；刺客兩次各 1.2×ATK − DEF；聖騎士 1.6×ATK − DEF 並回復 20% 最大生命。每擊至少 1 傷害，大招傷害逐擊四捨五入。Boss 大招為其普通傷害乘指定倍率。</p><p>沒有自動配點，也沒有單一標準答案。分散鍛造能避開低成功率，但最終 Boss 需要足夠的傷害與生存。每局約 5–8 分鐘，依決策時間與速度有所不同。重新整理頁面會開始新的旅程。</p>`);
+ showModal('遊玩指南','HOW TO PLAY',`<h3>一張職業卡，五場命運試煉。</h3><ol><li>選擇<strong>戰士、法師、刺客或聖騎士</strong>，獲得 ${INITIAL_AP} AP。</li><li>自行將 AP 用於 HP、ATK、DEF、CRIT 或 ULT；每次消耗 1 AP。</li><li>先判定<strong>成功或失敗</strong>，再隨機抽取增加值或損失值；失敗真的會扣能力。</li><li>成功提升該能力等級。等級越高，下次成功率越低；最高 Lv.6。失敗不降級。</li><li>準備好後挑戰 Boss。<strong>沒用完的 AP 會捨棄</strong>，不會累積。</li><li>戰鬥自動輪流進行，玩家先攻。先判定大招，未觸發才判定爆擊，再不觸發就是普攻。</li><li>普攻必定命中，固定傷害 <strong>max(1, ATK − DEF)</strong>。爆擊為普攻的 1.5 倍後四捨五入。</li><li>擊敗 Boss 後獲得 8、9、10、12 AP；進入下次強化時<strong>生命回滿</strong>，能力與等級保留。</li><li>連續擊敗五名 Boss 即勝利。任何一戰倒下，就要從第一關重新開始。</li><li>可切換 ×2 戰鬥速度。開啟說明視窗或切換分頁會暫停後續戰鬥回合。</li></ol><h3>冒險，也要有底線。</h3><p>HP 最低為職業初始生命的 50%；ATK ≥5、DEF ≥0、CRIT 介於 5%–60%、ULT 介於 10%–60%。每項最高 Lv.6。生命與能力保留一位小數；百分點成長也取一位小數，畫面與判定使用同一數值。</p><p>大招固定傷害：戰士 2.2×ATK − DEF；法師 2.6×ATK − 0.5×DEF；刺客兩次各 1.2×ATK − DEF；聖騎士 1.6×ATK − DEF 並回復 20% 最大生命。每擊至少 1 傷害，大招傷害逐擊四捨五入。Boss 大招為其普通傷害乘指定倍率。</p><p>沒有自動配點，也沒有單一標準答案。分散鍛造能避開低成功率，但最終 Boss 需要足夠的傷害與生存。每局約 5–8 分鐘，依決策時間與速度有所不同。重新整理頁面會開始新的旅程。</p>`);
 }
 function probabilityBody(){
  const key=state.probStat,m=STAT_META[key],lv=state.player?state.player.levels[key]:0,p=getEnhanceSuccessRate(lv),gain=m.gain,loss=m.loss;
@@ -287,7 +288,7 @@ document.addEventListener('click',handleAction);
 modal.addEventListener('click',event=>{if(event.target===modal){const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeModal();}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.screen==='battle')clearTimeout(state.timer);else if(!document.hidden&&state.screen==='battle')scheduleTurn(350);});
 // The shared pure rules are exposed for reproducible probability and balance tests.
-window.FateForge=Object.freeze({CLASSES,BOSSES,STAT_META,STAT_KEYS,clamp,round1,bernoulli,uniform,getEnhanceSuccessRate,makeCharacter,makeStats,enhanceCharacter,calculateNormalDamage,rollUltimate,rollCritical,performUltimate,performAttack});
+window.FateForge=Object.freeze({CLASSES,BOSSES,STAT_META,STAT_KEYS,INITIAL_AP,clamp,round1,bernoulli,uniform,getEnhanceSuccessRate,makeCharacter,makeStats,enhanceCharacter,calculateNormalDamage,rollUltimate,rollCritical,performUltimate,performAttack});
 renderHome();
 
 })();
